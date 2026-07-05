@@ -1,0 +1,54 @@
+# ---------------------------------------------------------------------------
+# Dependencies (Never commit these; they are re-installed via package managers)
+# ---------------------------------------------------------------------------
+node_modules/
+jspm_packages/
+web_modules/
+
+# ---------------------------------------------------------------------------
+# Environment Variables & Secrets (CRITICAL: Protect your API keys and database URI)
+# ---------------------------------------------------------------------------
+.env
+.env.local
+.env.*.local
+*.env
+# Ensure you do NOT ignore the template file if you use one
+!.env.example
+
+# ---------------------------------------------------------------------------
+# Logs & Debugging Output
+# ---------------------------------------------------------------------------
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ---------------------------------------------------------------------------
+# Build & Compilation Outputs (e.g., if using TypeScript or Babel)
+# ---------------------------------------------------------------------------
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# ---------------------------------------------------------------------------
+# Testing & Coverage Outputs
+# ---------------------------------------------------------------------------
+coverage/
+.nyc_output/
+
+# ---------------------------------------------------------------------------
+# IDE, Editor, & System Files
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db

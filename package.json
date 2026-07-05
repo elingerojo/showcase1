@@ -1,11 +1,11 @@
 {
-  "name": "mi-monorepo",
+  "name": "showcase1",
   "version": "1.0.0",
   "description": "",
   "private": "true",
   "workspaces": [
-    "apps/frontend",
-    "apps/backend"
+    "apps/*",
+    "shared/*"
   ],
   "scripts": {
     "dev:backend": "npm run dev --workspace=apps/backend",
