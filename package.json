@@ -1,0 +1,21 @@
+{
+  "name": "mi-monorepo",
+  "version": "1.0.0",
+  "description": "",
+  "private": "true",
+  "workspaces": [
+    "apps/frontend",
+    "apps/backend"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev --workspace=apps/backend",
+    "build:backend": "npm run build --workspace=apps/backend",
+    "start": "npm run start --workspace=apps/frontend",
+    "build": "npm run build --workspace=apps/frontend"
+  },
+  "packageManager": "npm@10.8.0" ,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}
