@@ -1,0 +1,65 @@
+<div class="chat-container">
+  <div class="chat-log">
+    @for (entry of entries(); track $index) {
+      <!-- User message -->
+      @if (entry.kind === 'user') {
+        <div class="user">🧑 You: {{ entry.text }}</div>
+      }
+
+      <!-- AI response -->
+      @if (entry.kind === 'ai') {
+        <div
+          class="ai"
+          [class.streaming]="entry.data.status === 'streaming'"
+        >
+          🤖
+          @for (seg of entry.data.segments; track $index) {
+            @switch (seg.type) {
+              @case ('thinking') {
+                <span class="think">🤔 {{ seg.text }}</span>
+              }
+              @case ('text') {
+                <span>{{ seg.text }}</span>
+              }
+              @case ('tool-call') {
+                <span class="tool">🧮 {{ seg.a }} {{ seg.symbol }} {{ seg.b }}</span>
+              }
+              @case ('tool-result') {
+                <span class="tool">= {{ seg.value }}</span>
+              }
+            }
+          }
+          @if (entry.data.status === 'streaming') {
+            <span class="cursor">▊</span>
+          }
+        </div>
+      }
+
+      <!-- Status indicators -->
+      @if (entry.kind === 'ai' && entry.data.status === 'done') {
+        <div class="done">✅ Done</div>
+      }
+      @if (entry.kind === 'ai' && entry.data.status === 'error') {
+        <div class="err">❌ Error</div>
+      }
+    }
+  </div>
+
+  <!-- Pure-signal input (no FormsModule) -->
+  <div class="input-row">
+    <input
+      #inputField
+      [value]="inputText()"
+      (input)="inputText.set(inputField.value)"
+      (keydown.enter)="send()"
+      placeholder="Type a message…"
+      [disabled]="loading()"
+    />
+    <button
+      (click)="send()"
+      [disabled]="loading() || !inputText().trim()"
+    >
+      Send
+    </button>
+  </div>
+</div>
