@@ -8,6 +8,7 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
         :root {
+            --chat-height: 85vh; /* Lalo edited */
             --primary-bg: #f8f9fa;
             --card-bg: #ffffff;
             --border-color: #e9ecef;
@@ -39,7 +40,7 @@
         .page-container {
             width: 100%;
             max-width: 1200px;
-            height: 85vh;
+            height: var(--chat-height); /* Lalo edited */
             display: grid;
             grid-template-columns: 320px 1fr;
             background-color: var(--card-bg);
@@ -58,7 +59,7 @@
         }
 
         .sidebar-header {
-            padding: 24px;
+            padding: 20px 24px;
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -68,15 +69,42 @@
         }
 
         .sidebar-content {
+            height: var(--chat-height); /* Lalo edited */
             padding: 24px;
             color: var(--text-secondary);
             font-size: 0.9rem;
+            overflow-y: auto;
         }
+
+        /* Card layout for each term */
+.glossary-item {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-left: 4px solid #0066cc;
+  border-radius: 0 4px 4px 0;
+}
+
+/* The Term */
+.glossary-item dt {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #0066cc;
+  margin-bottom: 0.25rem;
+}
+
+/* The definition */
+.glossary-item dd {
+  margin-left: 0;
+  line-height: 1.5;
+  color: #555;
+}
 
         /* Sección principal de la aplicación */
         .main-workspace {
             display: flex;
             flex-direction: column;
+            height: var(--chat-height); /* Lalo edited */
             background-color: #f1f5f9;
         }
 
@@ -122,17 +150,58 @@
         <!-- Barra lateral como diseño estético -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h1>Developer Hub</h1>
+                <h1>Probador de Agentes</h1>
             </div>
             <div class="sidebar-content">
-                <p>Plantilla de espacio de trabajo para tu nuevo proyecto de mensajería en tiempo real.</p>
+                <p>El robot con Inteligencia Artficial usa mi calculadora.
+                </p>
+                <p>Mi calculadora es simple. Solo tiene las cuatro funciones aritméticas básicas de sumar, restar, multiplicar y dividir.
+                </p>
+                <br />
+                <p>Estas son las instrucciones y la herramienta que le dí al robot:</p>
+                <dl class="glossary-list">
+                    <!-- Term 1 -->
+                    <div class="glossary-item">
+                        <dt id="api"><dfn>agent.instructions:</dfn></dt>
+                        <dd>'You are bad at precise math. For any arithmetic, calculation, or quantitative evaluation, you MUST use this calculator tool. Execute all aritmetic operations strictly using these tool.'</dd>
+                    </div>
+
+                    <!-- Term 2 -->
+                    <div class="glossary-item">
+                        <dt id="css"><dfn>tool.description:</dfn></dt>
+                        <dd>'Calculate arithmetic expressions: addition, subtraction, multiplication, division.'</dd>
+                    </div>
+
+                    <!-- Term 3 -->
+                    <div class="glossary-item">
+                        <dt id="dom"><dfn>tool.execute:</dfn></dt>
+                        <dd class="code">
+                            <pre style="background-color: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; font-family: 'Courier New', Courier, monospace; font-size: 14px; line-height: 1.5; overflow-x: auto;">
+                                <code>
+let resNum = 0;
+
+if (op === 'add') resNum = a + b;
+if (op === 'sub') resNum = a - b;
+if (op === 'mul') resNum = a * b;
+if (op === 'div') resNum = b !== 0 ? a / b : NaN;
+
+return resNum;
+                                </code>
+                            </pre>
+                        </dd>
+                    </div>
+                </dl>
+                <p>El robot usa su 'razonamiento' y resuleve con las herramientas que se le indica.</p>
+                <br />
+                <br />
+                <br />
             </div>
         </aside>
 
         <!-- Área de la derecha que alberga tu chat -->
         <main class="main-workspace">
             <header class="workspace-header">
-                <h2>Centro de Mensajes</h2>
+                <h2>Calculadora</h2>
             </header>
             
             <!-- Tu contenedor para el chat -->
