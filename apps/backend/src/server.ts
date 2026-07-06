@@ -114,4 +114,4 @@ app.post('/api/agent/agui-stream', async (req, res) => {
   }
 });
 
-app.listen(PORT, HOST, () => console.log('AG-UI Agent Server operational.'));
+app.listen(PORT, HOST, () => console.log(`AG-UI Agent Server operational at HOST = ${HOST}, PORT = ${PORT}`));
