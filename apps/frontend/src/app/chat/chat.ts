@@ -78,6 +78,8 @@ export class Chat {
         if (last?.type === 'thinking') {
           last.text += event.reasoning;
         } else {
+          // Inicia un nuevo segmento "thinking" con lo que 'llegó'
+          // (el segmento anterior, sea cual sea, excepto "thinking", 'ya termino')
           entry.segments.push({ type: 'thinking', text: event.reasoning });
         }
         break;
@@ -87,6 +89,8 @@ export class Chat {
         if (last?.type === 'text') {
           last.text += event.text;
         } else {
+          // Inicia un nuevo segmento "text" con lo que 'llegó'
+          // (el segmento anterior, sea cual sea, excepto "text", 'ya termino')
           entry.segments.push({ type: 'text', text: event.text });
         }
         break;
