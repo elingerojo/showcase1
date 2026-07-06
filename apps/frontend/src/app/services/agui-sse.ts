@@ -1,10 +1,11 @@
 import { Service } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { AguiEvent } from '@shared/models/messageTypes';
 
 @Service()
 export class AguiSse {
-  private readonly BASE_URL = 'http://localhost:3000/api/agent/agui-stream';
+  private readonly API_URL = environment.apiUrl; // Automatically resolves to the right URL
 
   blockCount = 0;
 
@@ -17,7 +18,7 @@ export class AguiSse {
     return new Observable<AguiEvent>((subscriber) => {
       const controller = new AbortController();
 
-      fetch(this.BASE_URL, {
+      fetch(this.API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
