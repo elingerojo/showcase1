@@ -39,12 +39,16 @@ export class Chat {
     div: '÷',
   };
 
+  private toolResultJustEnded: boolean = false
+
   send(): void {
     const text = this.inputText().trim();
     if (!text || this.loading()) return;
 
     this.inputText.set('');
     this.loading.set(true);
+
+    this.toolResultJustEnded = false
 
     // Push user entry
     this.entries.update((prev) => [...prev, { kind: 'user', text }]);
@@ -92,7 +96,8 @@ export class Chat {
         } else {
           // Inicia un nuevo segmento "text" con lo que 'llegó'
           // (el segmento anterior, sea cual sea, excepto "text", 'ya termino')
-          entry.segments.push({ type: 'text', text: event.text });
+          entry.segments.push({ type: 'text', text: (this.toolResultJustEnded ? "\n" : '') + event.text});
+          this.toolResultJustEnded = false
         }
         break;
       }
@@ -109,6 +114,7 @@ export class Chat {
       }
       case 'AGUI_TOOL_RESULT':
         entry.segments.push({ type: 'tool-result', value: event.res });
+        this.toolResultJustEnded = true;
         break;
       case 'AGUI_LIFECYCLE':
         if (event.status === 'completed') {
