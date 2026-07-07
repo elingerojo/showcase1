@@ -103,3 +103,41 @@
   background: #bbb;
   cursor: not-allowed;
 }
+
+/* Global Styles for Regex Output Elements */
+::ngDeep .math-block { 
+  display: block; 
+  text-align: center; 
+  margin: 1.5em 0; 
+  font-style: italic; 
+}
+::ngDeep .math-inline { 
+  font-style: italic; 
+}
+::ngDeep .math-text { 
+  font-style: normal; 
+  font-family: inherit; 
+}
+::ngDeep .math-frac {
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  text-align: center;
+  padding: 0 4px;
+}
+::ngDeep .math-num { 
+  border-bottom: 1px solid #000; 
+  padding-bottom: 2px; 
+}
+::ngDeep .math-den { 
+  padding-top: 2px; 
+}
+
+/* Boxed layout style rule */
+::ngDeep .math-boxed {
+  display: inline-block;
+  border: 1px solid #000;
+  padding: 4px 8px;
+  margin: 0 2px;
+  font-style: normal;
+}

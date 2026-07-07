@@ -19,7 +19,7 @@
                 <span class="think">🤔 {{ seg.text }}</span>
               }
               @case ('text') {
-                <span><br />{{ seg.text }}</span>
+                <span [innerHTML]="seg.text | toMD"></span>
               }
               @case ('tool-call') {
                 <span class="tool">🧮 {{ seg.a }} {{ seg.symbol }} {{ seg.b }}</span>

@@ -1,5 +1,6 @@
 import { Component, inject, signal, DestroyRef } from '@angular/core';
 import { AguiSse } from '../services/agui-sse';
+import { ToMDPipe } from '../shared/to-md-pipe';
 import { AguiEvent, MathOp } from '@shared/models/messageTypes';
 
 export type ChatSegment =
@@ -19,7 +20,7 @@ export type ChatEntry =
 
 @Component({
   selector: 'app-chat',
-  imports: [],
+  imports: [ToMDPipe],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
 })
