@@ -147,6 +147,29 @@ export class ToMDPipe implements PipeTransform {
     // Multiplicación (Cruz): \times -> &times; (×)
     html = html.replace(/\\times\b/g, '&times;');
 
+    // ==========================================
+    // SUBÍNDICES Y SUPERÍNDICES SIMPLES
+    // ==========================================
+
+    // Patrón genérico para capturar: contenido entre llaves {texto} o un solo carácter alfanumérico
+    const contentPattern = `(?:\\{((?:[^{}]|\\{[^{}]*\\})*)\\})|([a-zA-Z0-9])`;
+
+    // 1. Superíndices (Potencias / Límites): ^^{texto} o ^x -> <sup>texto</sup>
+    const supRegex = new RegExp(`\\^${contentPattern}`, 'g');
+    while (supRegex.test(html)) {
+      html = html.replace(supRegex, (_, braceContent, singleChar) => {
+        return `<sup>${braceContent || singleChar}</sup>`;
+      });
+    }
+
+    // 2. Subíndices: _{texto} o _x -> <sub>texto</sub>
+    const subRegex = new RegExp(`_${contentPattern}`, 'g');
+    while (subRegex.test(html)) {
+      html = html.replace(subRegex, (_, braceContent, singleChar) => {
+        return `<sub>${braceContent || singleChar}</sub>`;
+      });
+    }
+
     return html;
   }
 
