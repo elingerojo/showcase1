@@ -13,7 +13,7 @@ export class ToMDPipe implements PipeTransform {
       return (
         text
           // `inline code`  (must be before bold/italic so `**code**` works)
-          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          // .replace(/`([^`]+)`/g, '<code>$1</code>')
           // **bold** or __bold__
           .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
           .replace(/__(.+?)__/g, '<strong>$1</strong>')
@@ -21,12 +21,12 @@ export class ToMDPipe implements PipeTransform {
           .replace(/\*(.+?)\*/g, '<em>$1</em>')
           .replace(/_(.+?)_/g, '<em>$1</em>')
           // [text](url)
-          .replace(
+          /* .replace(
             /\[([^\]]+)\]\(([^)]+)\)/g,
             '<a href="$2" target="_blank" rel="noopener">$1</a>',
-          )
+          )*/
           // ~~strikethrough~~
-          .replace(/~~(.+?)~~/g, '<del>$1</del>')
+          // .replace(/~~(.+?)~~/g, '<del>$1</del>')
           // newline
           .replace(/\r?\n/g, '<br />')
       );
@@ -94,6 +94,60 @@ export class ToMDPipe implements PipeTransform {
       return out.join('\n'); // reune todo en un string con newline
   } 
 
+  private transformarLineaLatexAHtml(lineaTexto: string): string {
+    let resultado = "";
+    let i = 0;
+
+    while (i < lineaTexto.length) {
+      const charActual = lineaTexto[i];
+
+      // Detectar patrones de formato: ^ para superíndices o _ para subíndices
+      if ((charActual === '^' || charActual === '_') && i + 1 < lineaTexto.length) {
+        const siguienteChar = lineaTexto[i + 1];
+        const esSuperindice = charActual === '^';
+        const etiquetaOpen = esSuperindice ? "<sup>" : "<sub>";
+        const etiquetaClose = esSuperindice ? "</sup>" : "</sub>";
+
+        if (siguienteChar === '{') {
+          // --- CASO 1: Bloque con llaves ^{...} o _{...} ---
+          let inicioContenido = i + 2;
+          let nivelLlaves = 1;
+          let j = inicioContenido;
+
+          // Buscamos la llave de cierre correspondiente balanceando los niveles
+          while (j < lineaTexto.length && nivelLlaves > 0) {
+            if (lineaTexto[j] === '{') nivelLlaves++;
+            else if (lineaTexto[j] === '}') nivelLlaves--;
+            j++;
+          }
+
+          if (nivelLlaves === 0) {
+            // Extraemos el contenido interno de las llaves
+            const contenidoInterno = lineaTexto.substring(inicioContenido, j - 1);
+            
+            // RECURSIÓN: Procesamos el interior por si combina más ^ o _ anidados
+            const contenidoProcesado = this.transformarLineaLatexAHtml(contenidoInterno);
+            
+            resultado += `${etiquetaOpen}${contenidoProcesado}${etiquetaClose}`;
+            i = j; // Avanzamos el puntero al final de este bloque cerrado
+            continue;
+          }
+        } else if (/[a-zA-Z0-9]/.test(siguienteChar)) {
+          // --- CASO 2: Carácter único ^x o _x ---
+          resultado += `${etiquetaOpen}${siguienteChar}${etiquetaClose}`;
+          i += 2; // Avanzamos el puntero pasando el operador y el carácter
+          continue;
+        }
+      }
+
+      // Si no es un patrón de formato, copiamos el carácter tal cual al resultado
+      resultado += charActual;
+      i++;
+    }
+
+    return resultado;
+  }
+
   private convertLatex(input: string): string {
     if (!input) return '';
 
@@ -147,13 +201,23 @@ export class ToMDPipe implements PipeTransform {
     // Multiplicación (Cruz): \times -> &times; (×)
     html = html.replace(/\\times\b/g, '&times;');
 
+    // Espacio delgado: \, -> &thinsp;
+    html = html.replace(/\\,/g, '&thinsp;');
+
+    // Producto punto : \dot -> &middot;
+    html = html.replace(/\\cdot/g, '&middot;');
+
+    // Más o menos : \pm -> &plusm;
+    html = html.replace(/\\pm/g, '&plusm;');
+
     // ==========================================
     // SUBÍNDICES Y SUPERÍNDICES SIMPLES
     // ==========================================
 
     // Patrón genérico para capturar: contenido entre llaves {texto} o un solo carácter alfanumérico
     const contentPattern = `(?:\\{((?:[^{}]|\\{[^{}]*\\})*)\\})|([a-zA-Z0-9])`;
-
+    const supRegex = new RegExp(`\\^${contentPattern}`, 'g');
+    /*
     // 1. Superíndices (Potencias / Límites): ^^{texto} o ^x -> <sup>texto</sup>
     const supRegex = new RegExp(`\\^${contentPattern}`, 'g');
     while (supRegex.test(html)) {
@@ -168,6 +232,25 @@ export class ToMDPipe implements PipeTransform {
       html = html.replace(subRegex, (_, braceContent, singleChar) => {
         return `<sub>${braceContent || singleChar}</sub>`;
       });
+    }
+    */
+
+    // Si el buffer contiene al menos un salto de línea
+    if (html.includes("\n")) {
+      // Dividimos el buffer por saltos de línea
+      const lineas = html.split("\n");
+
+      // ¡CRÍTICO! La última posición de la lista siempre estará incompleta 
+      // (es el texto que viene después del último \n, o un string vacío)
+      lineas.pop();
+
+      // Procesamos únicamente las líneas que ya están 100% cerradas
+      let htmlProcesado = "";
+      for (const linea of lineas) {
+        htmlProcesado += this.transformarLineaLatexAHtml(linea) + "<br />"; // O la etiqueta de bloque que uses
+      }
+
+      html = htmlProcesado
     }
 
     return html;
@@ -196,7 +279,8 @@ export class ToMDPipe implements PipeTransform {
 
     // 2. CONVERTIR MARKDOWN: Aquí usas tu librería de Markdown (ej. marked)
     // Para el ejemplo, simulamos la conversión de Markdown a HTML:
-    let htmlOutput = this.convertMarkdownToHtml(processedText);
+    //let htmlOutput = this.convertMarkdownToHtml(processedText);
+    let htmlOutput = this.applyInlineMd(processedText);
 
     // 3. REINJECTAR Y CONVERTIR LATEX: Reemplazar los tokens con el HTML de LaTeX
     for (let i = 0; i < mathBlocks.length; i++) {

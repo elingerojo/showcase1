@@ -120,6 +120,30 @@ export class Chat {
         if (event.status === 'completed') {
           entry.status = 'done';
           this.loading.set(false);
+          /*
+          // Force an pseudo-entry with an extra 'newline' so Latex triggers rendering last line
+          // like: entry.segments.push({ type: 'text', text:  "\n"});
+          // But have to find it looking double backwards for loops (i,j) and use a little ugly
+          // labeled break;
+          */
+          this.entries.update((currentEntries) => {
+            const updatedEntries = [...currentEntries] // mutate so it can be updated
+            // Find the last text segment ai has sent at this moment (when 'completed' message arrives)
+            outerLoop: for (let i = updatedEntries.length - 1; i >= 0; i--) {
+              let ent = updatedEntries[i];
+              if (ent.kind == "ai") {
+                let segs = ent.data?.segments;
+                for (let j = segs.length - 1; j>=0; j--) {
+                  let segment = segs[j];
+                  if (segment.type == 'text') {
+                    segment.text += '\n';
+                    break outerLoop;
+                  }
+                }
+              }
+            }
+            return updatedEntries
+          });
         }
         break;
       case 'AGUI_ERROR':
